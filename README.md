@@ -9,12 +9,12 @@
 
 ## ⚡ ติดตั้ง (เลือกตามเครื่อง)
 
-> เปลี่ยน `<GITHUB_URL>` เป็น URL repo จริงหลัง push
+
 
 ### 🍎 Mac / Linux
 
 ```bash
-git clone <GITHUB_URL> aieasypro-vibe-skill
+git clone https://github.com/MarkVibeSapce/aieasypro-vibe-skill.git
 cd aieasypro-vibe-skill
 bash install.sh
 ```
@@ -22,7 +22,7 @@ bash install.sh
 ### 🪟 Windows (PowerShell)
 
 ```powershell
-git clone <GITHUB_URL> aieasypro-vibe-skill
+git clone https://github.com/MarkVibeSapce/aieasypro-vibe-skill.git
 cd aieasypro-vibe-skill
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
