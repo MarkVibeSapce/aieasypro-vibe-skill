@@ -1,7 +1,7 @@
-# Vibe Coding Skills — AI Easy Pro
+# AI Easy Pro — Vibe Coding Skills
 
 ชุด **skills** สำหรับ Claude Code ที่ใช้ในคอร์ส Vibe Coding Bootcamp
-ช่วยให้ build MVP เร็วขึ้น ประหยัด token และทำงานเป็นระบบตั้งแต่วันแรก
+ช่วยให้ build MVP เร็วขึ้น ทำงานเป็นระบบตั้งแต่วันแรก
 
 ติดตั้งครั้งเดียว → ใช้ได้ทุกโปรเจค (ติดตั้งที่ `~/.claude/skills/`)
 
@@ -9,19 +9,21 @@
 
 ## ⚡ ติดตั้ง (เลือกตามเครื่อง)
 
+> เปลี่ยน `<GITHUB_URL>` เป็น URL repo จริงหลัง push
+
 ### 🍎 Mac / Linux
 
 ```bash
-git clone https://github.com/enmeclub-stack/vibe-skills.git
-cd vibe-skills
+git clone <GITHUB_URL> aieasypro-vibe-skill
+cd aieasypro-vibe-skill
 bash install.sh
 ```
 
 ### 🪟 Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/enmeclub-stack/vibe-skills.git
-cd vibe-skills
+git clone <GITHUB_URL> aieasypro-vibe-skill
+cd aieasypro-vibe-skill
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
@@ -32,14 +34,6 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 ---
 
 ## 📦 Skills ในชุดนี้
-
-### 💰 ประหยัด Token
-| Skill | ใช้ทำอะไร |
-|-------|-----------|
-| `caveman` | โหมดคุยแบบกระชับ ตัด token ~75% ยังเก็บเนื้อครบ — `/caveman` |
-| `caveman-compress` | บีบไฟล์ memory (CLAUDE.md/notes) ให้เล็กลง ประหยัด input token |
-| `caveman-help` | การ์ดสรุปคำสั่ง caveman ทั้งหมด |
-| `cavecrew` | แตกงานให้ subagent ทำ — main chat กิน context น้อยลง |
 
 ### 🔧 คุณภาพ + Workflow
 | Skill | ใช้ทำอะไร |
@@ -65,7 +59,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 2. **Day 2** — เปิด chat ใหม่ → `/build-frontend` → `/vercel-deploy` (preview)
 3. **Day 3** — `/supabase-setup` → `/ux-ui-review` → `/vercel-deploy prod`
 
-ระหว่างทางเปิด `/caveman` ไว้เพื่อประหยัด token, ใช้ `/handoff` เมื่อ context จะเต็ม
+ระหว่างทางใช้ `/handoff` เมื่อ context จะเต็ม เพื่อไม่ต้องเล่างานซ้ำ
 
 ---
 
