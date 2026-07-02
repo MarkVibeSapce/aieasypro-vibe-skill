@@ -51,12 +51,20 @@ description: >-
 ```
 /add-file docs/design.md
 /add-file docs/database.md
+/add-file docs/roles.md
 /add-file wireframe.template.html
 สร้าง wireframe.html จาก design.md + database.md โดยยึดโครง + กฎ annotation จาก
 wireframe.template.html — 1 ไฟล์ครบทุกหน้า MVP
+อ่าน roles.md ก่อนวาด — ทุก role ในนั้นต้องมีอย่างน้อย 1 หน้าจอ/frame ในไฟล์นี้ตาม
+touchpoint ที่ระบุ (ไม่ใช่วาดแค่ role แรก) ติด data-role กำกับทุก frame
 ใช้ token/copy จริงจาก design.md. ถ้าข้อมูลไม่พอ ถามก่อน ห้ามเดา
 ```
 → เปิดดูในเบราว์เซอร์ → บอกที่อยากปรับเป็นคำพูด → AI แก้. **ภาระ annotation อยู่ที่ AI ไม่ใช่ user.**
+
+> **กับดักที่พบบ่อย:** นักเรียนดูแค่หน้าจอของ role แรกที่เจอ (มักเป็น customer) แล้วลืมว่า
+> ระบบมี role อื่น (แอดมิน/เจ้าของร้าน) ด้วย → build ออกมาสอดคล้องแค่ role เดียว, role อื่น
+> หายไปทั้งที่อยู่ใน roles.md/database.md (permissions/RLS อ้างถึง role นั้น). เช็คก่อน LOCK
+> เสมอว่า **ทุก role ใน roles.md โผล่ใน wireframe.html อย่างน้อย 1 frame**.
 
 (หรือจะก๊อป `wireframe.template.html` มาแก้เองก็ได้ ถ้าอยากคุมเอง)
 
@@ -79,6 +87,7 @@ wireframe.template.html — 1 ไฟล์ครบทุกหน้า MVP
 | annotation | ความหมาย | ตัวอย่าง |
 |-----------|----------|----------|
 | `data-screen="/path"` | หน้านี้ = route ไหน | `data-screen="/items"` |
+| `data-role="ชื่อ role"` | หน้านี้เป็นของ role ไหนใน roles.md | `data-role="แอดมิน"` |
 | `data-component="Name"` | ขอบเขต component | `data-component="ItemCard"` |
 | `data-field="table.col"` | ค่านี้มาจาก database.md ไหน | `data-field="item.title"` |
 | `data-state="empty\|loading\|error"` | บล็อกนี้คือ state ไหน | `data-state="empty"` |
@@ -96,6 +105,22 @@ wireframe.template.html — 1 ไฟล์ครบทุกหน้า MVP
 
 **Restraint (Chanel rule):** signature เด่น 1 อย่าง ที่เหลือเงียบ. ตรงกับ MVP ceiling (≤3 หน้า).
 **ไม่ต้องหวือหวา ขอแค่ตรง.**
+
+**4. Mockup frame — ห่อทุกหน้าจอด้วยกรอบอุปกรณ์ ก่อนโชว์ user**
+
+`wireframe.html` ต้องเป็น **gallery ไฟล์เดียว** รวมทุก `data-screen` ของ MVP เรียงกัน แต่ละ
+หน้าห่อด้วยกรอบให้เห็นสัดส่วนจริง ไม่ใช่โชว์ raw HTML เต็มความกว้างจอ:
+
+| หน้าจอ | กรอบ default | เมื่อไหร่สลับเป็น desktop frame |
+|---|---|---|
+| ส่วนใหญ่ (user-facing) | 📱 phone frame (375px, bezel มน) | — |
+| แอดมิน/แดชบอร์ด/ตารางข้อมูลเยอะ | 💻 browser frame (1200px+) | เมื่อหน้านั้นต้องใช้จริงบน desktop เท่านั้น (เช่นเจ้าของร้านดูรายงาน) |
+
+- เรียง frame เป็น gallery (flex-wrap) + label ชื่อ route กำกับบนแต่ละกรอบ
+- กรอบ (bezel/browser-bar) = **presentation เท่านั้น ไม่ port** — คลุมด้วย comment
+  `<!-- MOCKUP FRAME — ไม่ port -->`, เนื้อหาจริงที่ port อยู่ใน div ลูกที่มี `data-screen`
+- ไม่แน่ใจว่าหน้าไหนควรเป็น desktop = ถามก่อน. ค่า default เสมอคือมือถือ
+- ใช้ `wireframe.template.html` เป็นฐาน — มี gallery + ทั้งสองกรอบเป็นตัวอย่างให้แล้ว
 
 → เสร็จแล้วไป **เฟส 2 LOCK**.
 
@@ -133,6 +158,8 @@ wireframe.template.html — 1 ไฟล์ครบทุกหน้า MVP
 สร้าง wireframe.html ใหม่ด้วย Tailwind + annotation จาก <mockup เดิม> เป็น visual reference
 รักษาให้ตรงของเดิม: ทุก screen, ทุก block, ลำดับ, copy คำต่อคำ, สี/ฟอนต์เดิม
 ห้ามเพิ่ม/ลด/จัดใหม่ นอกจากที่ของเดิมมี
+ห่อแต่ละ screen ด้วย mockup frame (📱 มือถือ default / 💻 desktop เฉพาะหน้าที่ต้องใช้จริง)
+ตามกฎ wireframe-lock — กรอบเป็น presentation เท่านั้น ไม่นับใน fidelity diff
 ```
 **แล้วบังคับทำขั้นนี้ ← จุดที่คนมักข้าม:**
 ```
@@ -155,20 +182,27 @@ wireframe นิ่งแล้ว สั่ง:
 ```
 /add-file wireframe.html
 /add-file docs/database.md
+/add-file docs/roles.md
 อ่าน wireframe.html สร้าง wireframe.lock.md — list ตาม annotation:
-- ทุก screen (route)
+- ทุก screen (route) + data-role ของหน้านั้น
 - ทุก component (ชื่อ + อยู่หน้าไหน + data-field + เป็น list ไหม)
 - ทุก state (empty/loading/error) ของแต่ละ component
 - ทุก action (ปุ่มไปไหน)
+- ท้ายไฟล์: ตาราง "Role Coverage" — role ทุกตัวจาก roles.md × screen ที่มี data-role นั้นใน
+  wireframe.html — role ไหนไม่มี screen เลย = ขึ้น "❌ ขาด" ให้เห็นชัด
 อย่าเพิ่มอะไรที่ไม่มีใน wireframe. ถ้ามีช่องโหว่/ขัดกัน ถามก่อน ห้ามเดา
 ```
 
 > ⛔ **STOP — ห้าม build จนกว่า user ยืนยัน lock.**
 > แสดง `wireframe.lock.md` ให้ user อ่าน → ถามชัด "lock นี้ถูกต้องมั้ย เริ่ม build ได้เลยหรือ?"
 > lock คือ *checkpoint ของคน* ก่อนลงแรง build. รวบ 3 เฟสจบช็อตเดียว = เสียจุดประสงค์ของสกิล.
+>
+> **ก่อน user ยืนยัน เช็ค Role Coverage table ก่อนเสมอ** — ถ้ามี role ไหนขึ้น "❌ ขาด"
+> ห้ามให้ user ยืนยันผ่าน ต้องกลับไปเติม wireframe ให้ครบทุก role ก่อน (กันปัญหาที่พบบ่อย:
+> นักเรียนดูแค่ role แรก แล้วระบบที่ build ออกมาไม่สอดคล้องกับ role อื่นที่วางแผนไว้).
 
-หา gap ตรงนี้ถูกกว่าตอน build: field ไม่มีใน database, state ขาด, ปุ่มไปหน้าที่ยังไม่มี
-→ แก้ wireframe ก่อน lock ใหม่.
+หา gap ตรงนี้ถูกกว่าตอน build: field ไม่มีใน database, state ขาด, ปุ่มไปหน้าที่ยังไม่มี,
+role ขาด → แก้ wireframe ก่อน lock ใหม่.
 
 ---
 
@@ -241,12 +275,15 @@ Port wireframe.html เป็น Next.js pages — 1:1
                                                  ▼
 [Day 3] supabase-setup ── ต่อ DB จริง + login (ผูก data-field → table จริง)
                                                  ▼
-        ux-ui-review → vercel-deploy prod
+        ux-ui-review (Reviewer Map: role ทุกตัว + คนนอก) → vercel-deploy prod
 ```
 
-- **ก่อน:** `md-scaffold` (ได้ design.md + database.md ที่ annotation อ้างถึง).
+- **ก่อน:** `md-scaffold` (ได้ design.md + database.md + **roles.md** ที่ annotation อ้างถึง —
+  wireframe-lock อ่าน roles.md เพื่อคุมว่าทุก role มี frame ในไฟล์เดียวกัน).
   เคส 🅱️ ที่ไม่มี database.md → ทำ md-scaffold ก่อน B1/B2.
-- **หลัง:** `build-frontend` (คุม behavior/logic ต่อ), `supabase-setup` (ต่อ DB จริง), `ux-ui-review`.
+- **หลัง:** `build-frontend` (คุม behavior/logic ต่อ), `supabase-setup` (ต่อ DB จริง), `ux-ui-review`
+  (ระบบเสร็จแล้ว → วิเคราะห์ว่าใครจะรีวิว ในฐานะอะไร — role ในระบบ + คนนอกระบบ เช่น
+  อาจารย์/ลูกค้า/ผู้ใช้จริง — ดูขั้นตอน "Reviewer Map" ใน `ux-ui-review`).
 - `handoff` ระหว่างทางถ้า context จะเต็ม — ส่งต่อไม่ต้องเล่าซ้ำ.
 - token/copy discipline ปรับจาก skill `frontend-design` ของ Anthropic.
 

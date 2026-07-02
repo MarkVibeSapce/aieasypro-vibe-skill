@@ -23,7 +23,11 @@ description: >-
 
 2. **บังคับ MVP ceiling** — ก่อนเขียน features.md ให้ถาม:
    > "คอร์สนี้ build ได้จริง ~6 ชม. อะไรคือ MVP ที่เล็กที่สุดที่ยังแก้ปัญหาหลักได้?"
-   - เพดาน: ≤ 3 หน้า + 2–3 tables + 1 role หลัก. เกินนี้ = ตัด.
+   - เพดาน: ≤ 3 หน้า detail + 2–3 tables + role หลัก 1 role ทำเต็ม.
+   - **แต่ role อื่นใน roles.md ห้ามหายไปเงียบๆ** — ถ้ามีมากกว่า 1 role ทุก role ต้องมี
+     touchpoint อย่างน้อย 1 จุดใน MVP (เช่น login แยกสิทธิ์ไปหน้า dashboard ของ role นั้น
+     แม้จะยังไม่ทำ feature เต็ม) กันนักเรียนลืมว่าระบบมี role อื่นอยู่ ทำให้ระบบที่ build
+     ออกมาไม่สอดคล้องกับ roles.md ที่วางแผนไว้
 
 3. **เขียนไฟล์ลง `/docs`** — สร้างครบ 7 ไฟล์ตาม template ด้านล่าง.
 
@@ -34,7 +38,7 @@ description: >-
 | ไฟล์ | เนื้อหา |
 |------|---------|
 | `project.md` | ชื่อโปรเจค, ปัญหาที่แก้, 1-line pitch, tech stack (Next.js + Tailwind + Supabase + Vercel) |
-| `roles.md` | user แต่ละแบบ + สิ่งที่ทำได้ |
+| `roles.md` | user แต่ละแบบ + สิ่งที่ทำได้ + touchpoint ใน MVP ของแต่ละ role (ห้ามมี role ไหนไม่มี touchpoint) |
 | `user-journey.md` | Happy Path ของ role หลัก step-by-step + Screens List (ทุกหน้าที่ต้อง build) |
 | `features.md` | features แยก **MVP (build วันนี้)** vs **Later (ตัดออก)** |
 | `design.md` | สี, font, layout ต่อหน้า, component ต่อหน้า (จาก wireframe) |
@@ -53,6 +57,14 @@ description: >-
 [สร้าง X เพราะ Y]
 ## Stack
 Next.js + Tailwind CSS + Supabase + Vercel (deploy ด้วย Vercel CLI, ไม่ใช้ GitHub)
+```
+
+```markdown
+# roles.md
+| role | ทำอะไรได้ | MVP touchpoint (อย่างน้อย 1 จุด แม้เล็กสุด) |
+|------|----------|----------------------------------------------|
+| [role หลัก] | [feature เต็ม] | [หน้า/flow เต็มใน MVP] |
+| [role อื่น] | [feature จริงตอน production] | [หน้า/flow ขั้นต่ำใน MVP — เช่น login แยกไป dashboard เปล่า] |
 ```
 
 ```markdown

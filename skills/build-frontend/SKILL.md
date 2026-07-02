@@ -1,45 +1,61 @@
 ---
 name: build-frontend
 description: >-
-  Build Frontend ของ MVP ด้วย Next.js + Tailwind CSS จากไฟล์ MD ที่วางแผนไว้ —
-  ทีละหน้า ตาม Screens List. คุมให้ตรง design.md, review diff ก่อน accept, จับสัญญาณ
-  context หมด. ใช้ตอน M6 หลังมี docs ครบ. Trigger: "build frontend", "สร้างหน้าเว็บ",
-  "/build-frontend", "เริ่ม build", "setup next.js", "ทำ UI ตาม wireframe".
+  ใส่ behavior/logic ทับหน้าที่ port มาจาก wireframe-lock เฟส 3 แล้ว — ทีละหน้า ตาม
+  Screens List ใน wireframe.lock.md. คุมให้ตรง lock, review diff ก่อน accept, จับสัญญาณ
+  context หมด. ใช้ตอน M6 **หลัง** wireframe-lock ผ่านเฟส LOCK+BUILD แล้วเท่านั้น.
+  ไม่ใช่จุดเริ่ม build UI จาก design.md ตรงๆ. Trigger: "build frontend", "สร้างหน้าเว็บ",
+  "/build-frontend", "เริ่ม build", "setup next.js", "ใส่ behavior ให้หน้าที่ port แล้ว".
 ---
 
-# build-frontend — Build UI ด้วย Claude Code
+# build-frontend — ใส่ behavior/logic ด้วย Claude Code
 
-เป้าหมาย: สร้าง Frontend ทั้งหมดจาก MD spec — user ไม่พิมพ์ code เอง. ตรง design.md,
-ทีละหน้า, review ทุก edit.
+เป้าหมาย: หน้า UI ที่ `wireframe-lock` เฟส 3 port มาแล้ว (โครง+copy+state ตรง wireframe) —
+สกิลนี้ทำให้ **ทำงานจริง** (validation, คำนวณ, submit) ตาม `wireframe.lock.md` +
+`features.md`. ทีละหน้า, review ทุก edit. **ไม่ redesign, ไม่สร้าง layout ใหม่.**
+
+## 0️⃣ ENTRY (ห้ามข้าม) — เช็คก่อนเริ่ม
+
+สกิลนี้ไม่ใช่จุดเริ่ม build frontend — ต้องมี wireframe ที่ lock+port มาแล้วก่อนเสมอ.
+
+| เช็ค | ผล |
+|---|---|
+| มี `wireframe.lock.md` และหน้าที่ port แล้วจาก `/wireframe-lock` เฟส 3 (BUILD)? | ✅ ทำต่อด้านล่าง |
+| มีแค่ `design.md`/`features.md` เฉยๆ ยังไม่เคยทำ wireframe | ⛔ หยุด. บอก user: "ต้องทำ wireframe ก่อน" แล้วสั่ง `/wireframe-lock` |
+
+> เหตุผล: build ตรงจาก design.md = AI เดา layout เอง → ไม่ตรงของที่ user เห็น/อนุมัติมาก่อน.
+> wireframe-lock เฟส 3 setup Next.js + port UI ให้แล้ว 1:1 (โครง/copy/state).
+> สกิลนี้ทำแค่ **เติม logic ทับของที่ port มา** — ไม่ใช่สร้างหน้าใหม่.
 
 ## Starter Prompt (prompt แรกของ build)
 
 ```
 /add-file docs/project.md
-/add-file docs/roles.md
-/add-file docs/user-journey.md
 /add-file docs/features.md
-/add-file docs/design.md
+/add-file docs/database.md
+/add-file wireframe.lock.md
 
-อ่าน MD files ทั้งหมดที่ให้ไป แล้ว setup Next.js project ด้วย Tailwind CSS
-เริ่มที่ folder structure ก่อน แล้วสร้าง Landing Page ตาม design.md
+อ่าน wireframe.lock.md แล้วใส่ behavior ให้ทุก data-action ในหน้า [X] ทำงานจริง
+(validation, คำนวณ, submit) ตาม features.md — ใช้ mock data ก่อน ห้ามแก้ layout/copy/
+component ที่ port มาแล้วจาก wireframe
 ```
 
-## ลำดับ build
+## ลำดับ build (บน UI ที่ port มาจาก wireframe-lock แล้ว)
 
-1. **Setup** — Next.js + Tailwind + folder structure (Claude ทำให้).
-2. **Landing Page** — หน้าแรกตาม design.md.
-3. **Core Feature Pages** — ทีละหน้า ตาม Screens List ใน user-journey.md.
-4. **Navigation** — เชื่อม page-to-page ตาม Happy Path.
-5. อย่าเพิ่ง auth/database — นั่น M7. หน้านี้ทำ UI + mock data ก่อนพอ.
+1. **เช็ค ENTRY gate** — มี `wireframe.lock.md` + หน้า ported แล้วหรือยัง (ด้านบน).
+2. **ใส่ behavior ทีละหน้า** — ตาม Screens List ใน `wireframe.lock.md`, ทำ `data-action`
+   ให้ทำงานจริง (mock data ก่อน).
+3. **Navigation** — เชื่อม page-to-page ตาม `data-action="goto:..."`.
+4. อย่าเพิ่ง auth/database จริง — นั่น M7 (`supabase-setup`). หน้านี้ทำ logic + mock data ก่อนพอ.
 
 ## กฎเหล็ก
 
 - **Review diff ก่อน accept ทุกครั้ง** — กด `d` ดู diff → เข้าใจ → ค่อย `y`. Claude ผิดได้เสมอ.
 - **Error → โยนตรงๆ** — copy error ทั้งก้อน ใส่ prompt: `got this error: [paste]` → ให้ Claude
   วิเคราะห์ + แก้เอง. ห้าม user แก้ code เอง.
-- **ทีละหน้า** — build หน้าเดียวให้เสร็จ + ดูใน browser ก่อนไปหน้าถัดไป. อย่าสั่งรวดเดียวทั้งแอป.
-- **ตรง design.md** — ถ้า Claude ออกแบบเองนอก spec ให้ทัก: "ทำตาม design.md หน้า [X]".
+- **ทีละหน้า** — ใส่ behavior หน้าเดียวให้เสร็จ + ดูใน browser ก่อนไปหน้าถัดไป. อย่าสั่งรวดเดียวทั้งแอป.
+- **ตรง wireframe.lock.md** — ถ้า Claude แก้ layout/component/copy นอก lock ให้ทัก:
+  "ทำตาม wireframe.lock.md หน้า [X] ห้ามแก้โครง".
 
 ## ดู app บน local
 
