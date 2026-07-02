@@ -3,9 +3,11 @@ name: wireframe-lock
 description: >-
   แก้ปัญหา build ออกมาไม่ตรง wireframe. ทำ wireframe.html ให้เป็น "สัญญา" ที่ AI อ่านได้
   → build กลายเป็นการ port 1:1 ไม่ใช่การเดา → verify เทียบทีละจุด. ใช้ได้กับทุกธุรกิจ/ทุกโปรเจค.
-  ทำงาน 3 เฟส: design → lock → build+verify. ใช้ตั้งแต่ออกแบบ wireframe ก่อน build.
+  รองรับ 2 เคส: (A) ออกแบบ wireframe ใหม่จากศูนย์, (B) มี wireframe/mockup อยู่แล้วต้อง port เป็นระบบ.
+  ทำงาน 4 เฟส: entry(เลือกเคส) → design → lock(ยืนยัน) → build+verify.
   Trigger: "ทำ wireframe", "/wireframe-lock", "wireframe ไม่ตรง", "build ตาม wireframe",
-  "ออกแบบหน้าเว็บก่อน build", "lock design", "port wireframe เป็น code".
+  "ออกแบบหน้าเว็บก่อน build", "lock design", "port wireframe เป็น code",
+  "มี wireframe แล้วอยากทำเป็นระบบ", "แปลง mockup เป็นเว็บ", "ทำระบบให้เหมือน wireframe 100%".
 ---
 
 # wireframe-lock — wireframe = สัญญา, build = port, แล้ว verify
@@ -28,7 +30,21 @@ description: >-
 
 ---
 
-## 🅰️ เฟส 1 — DESIGN: สร้าง wireframe.html แบบมีกฎ
+## 0️⃣ เฟส 0 — ENTRY: เลือกเส้นทางก่อนเริ่ม (ห้ามข้าม)
+
+ถามตัวเองข้อเดียว: **มี wireframe/mockup อยู่แล้วหรือยัง?**
+
+| | เคส | ทำต่อที่ |
+|---|-----|---------|
+| 🅰️ | **ยังไม่มี** — เริ่มจากศูนย์ (โปรเจคใหม่ / งานนักเรียน) | เฟส 1-A (DESIGN ใหม่) |
+| 🅱️ | **มีแล้ว** — มี HTML mockup / Figma / wireframe เดิม ต้อง port เป็นระบบ | เฟส 1-B (ADOPT ของเดิม) |
+
+> ไม่แน่ใจ = ถาม user. อย่าเดา.
+> ทั้ง 2 เคส บรรจบกันที่ **เฟส 2 LOCK** แล้วไหลต่อเหมือนกัน.
+
+---
+
+## 1️⃣-🅰️ DESIGN (ออกแบบใหม่) — สร้าง wireframe.html แบบมีกฎ
 
 ### วิธีเร็วสุด (แนะนำ) — ให้ AI ร่างให้ก่อน แล้วปรับด้วยตา
 ไม่ต้องเขียน HTML เอง. สั่ง:
@@ -81,9 +97,59 @@ wireframe.template.html — 1 ไฟล์ครบทุกหน้า MVP
 **Restraint (Chanel rule):** signature เด่น 1 อย่าง ที่เหลือเงียบ. ตรงกับ MVP ceiling (≤3 หน้า).
 **ไม่ต้องหวือหวา ขอแค่ตรง.**
 
+→ เสร็จแล้วไป **เฟส 2 LOCK**.
+
 ---
 
-## 🅱️ เฟส 2 — LOCK: freeze สเปค
+## 1️⃣-🅱️ ADOPT (มี wireframe แล้ว) — เคสพิเศษ: อย่าวาดใหม่มั่ว
+
+**อันตรายของเคสนี้:** wireframe เดิม = ดีไซน์ที่ลูกค้า/หัวหน้า**อนุมัติแล้ว**. ถ้า AI ไป
+"วาดใหม่" เงียบๆ → เกิด wireframe 2 ตัว, drift จากของที่อนุมัติ, แล้วไม่มีใครรู้ว่าตัวไหนจริง.
+เป้าของเคสนี้ = **แปลงของเดิมให้เป็นสัญญาที่ port ได้ โดยรักษา fidelity กับของเดิม 100%**.
+
+### เลือกทางย่อย
+```
+ถาม: mockup เดิมเขียนด้วยอะไร?
+├─ HTML/CSS อยู่แล้ว, โครงชัด  → ทาง B1: ANNOTATE ในที่ (ดีที่สุด — ไม่ redraw)
+└─ Figma/รูป/HTML มั่วๆ ไม่มี tech ตรง  → ทาง B2: RE-DRAW + fidelity diff (บังคับ)
+```
+
+### B1 — ANNOTATE ในที่ (preferred)
+รักษาไฟล์เดิม เพิ่มแค่ token block + `data-*`:
+```
+/add-file <mockup เดิม>.html
+/add-file docs/database.md   (ถ้ามี — ถ้าไม่มี ทำ md-scaffold ก่อน)
+ใส่ annotation ให้ mockup เดิมนี้ตามกฎ wireframe-lock:
+- เพิ่ม token block บนสุด (อ่านสี/ฟอนต์จริงจากไฟล์ มาใส่ ห้ามเปลี่ยนค่า)
+- ใส่ data-screen / data-component / data-field / data-state / data-list / data-action
+- *** ห้ามแก้ layout, copy, สี, โครง DOM เดิมแม้แต่จุดเดียว *** เพิ่มได้แค่ attribute + token comment
+เขียนทับไฟล์เดิมชื่อ wireframe.html (สำเนา annotated). ถ้า field ไหนไม่มีใน database.md บอกมา ห้ามเดา
+```
+→ ได้ wireframe.html ที่ = ของเดิมเป๊ะ + อ่านได้. **ข้ามการ diff เพราะไม่ได้แก้อะไร.**
+
+### B2 — RE-DRAW + FIDELITY DIFF (เมื่อ redraw เลี่ยงไม่ได้)
+ถ้าต้อง redraw (เช่น mockup เป็น Figma หรือ HTML คนละ tech กับ build):
+```
+สร้าง wireframe.html ใหม่ด้วย Tailwind + annotation จาก <mockup เดิม> เป็น visual reference
+รักษาให้ตรงของเดิม: ทุก screen, ทุก block, ลำดับ, copy คำต่อคำ, สี/ฟอนต์เดิม
+ห้ามเพิ่ม/ลด/จัดใหม่ นอกจากที่ของเดิมมี
+```
+**แล้วบังคับทำขั้นนี้ ← จุดที่คนมักข้าม:**
+```
+เปิด <mockup เดิม> + wireframe.html ใหม่ วางข้างกัน. ไล่ทีละหน้า list ออกมา:
+- screen/block ไหนในของเดิม ที่หายไปหรือเพี้ยนในตัวใหม่
+- copy คำไหนไม่ตรง
+- สี/ระยะ/ลำดับต่างจุดไหน
+ถ้ามีต่าง → แก้ wireframe.html ใหม่ให้ตรงของเดิม แล้ว diff ซ้ำ จนตรง
+```
+> **FIDELITY GATE:** เคส B2 ห้ามไป LOCK จนกว่า diff ใหม่↔เดิม = ตรง.
+> นี่คือ verify ที่สำคัญกว่า build↔wireframe เพราะพิสูจน์ว่าไม่ทิ้งของที่อนุมัติแล้ว.
+
+→ ตรงแล้วไป **เฟส 2 LOCK**.
+
+---
+
+## 2️⃣ LOCK — freeze สเปค **แล้วให้ user ยืนยัน (STOP gate)**
 
 wireframe นิ่งแล้ว สั่ง:
 ```
@@ -96,14 +162,17 @@ wireframe นิ่งแล้ว สั่ง:
 - ทุก action (ปุ่มไปไหน)
 อย่าเพิ่มอะไรที่ไม่มีใน wireframe. ถ้ามีช่องโหว่/ขัดกัน ถามก่อน ห้ามเดา
 ```
-→ อ่าน `wireframe.lock.md` → ยืนยัน → **สัญญาตายตัว. build ต้องตรงกับไฟล์นี้.**
+
+> ⛔ **STOP — ห้าม build จนกว่า user ยืนยัน lock.**
+> แสดง `wireframe.lock.md` ให้ user อ่าน → ถามชัด "lock นี้ถูกต้องมั้ย เริ่ม build ได้เลยหรือ?"
+> lock คือ *checkpoint ของคน* ก่อนลงแรง build. รวบ 3 เฟสจบช็อตเดียว = เสียจุดประสงค์ของสกิล.
 
 หา gap ตรงนี้ถูกกว่าตอน build: field ไม่มีใน database, state ขาด, ปุ่มไปหน้าที่ยังไม่มี
 → แก้ wireframe ก่อน lock ใหม่.
 
 ---
 
-## 🅲️ เฟส 3 — BUILD (port 1:1) + VERIFY
+## 3️⃣ BUILD (port 1:1) + VERIFY
 
 ### Build — สั่งเป็น "port" ไม่ใช่ "สร้าง"
 ```
@@ -126,7 +195,7 @@ Port wireframe.html เป็น Next.js pages — 1:1
 ห้าม redesign ห้ามเพิ่มหน้า/ปุ่ม/section ที่ไม่มีใน lock
 ```
 
-### Verify — 2 ชั้น
+### Verify — 2 ชั้น (ห้ามเคลมว่าตรงโดยไม่เทียบจริง)
 **ชั้น 1 — diff อัตโนมัติ (ฟรี ไม่ต้อง browser):** สั่ง
 ```
 เทียบ wireframe.html กับ .tsx ที่เพิ่ง gen — list ออกมาว่ามี component/field/copy/state
@@ -134,7 +203,8 @@ Port wireframe.html เป็น Next.js pages — 1:1
 ```
 → จับของหาย/เกินก่อนดูตา.
 
-**ชั้น 2 — checklist ด้วยตา:** เปิด `wireframe.html` + `localhost:3000` วางข้างกัน ต่อหน้า:
+**ชั้น 2 — checklist ด้วยตา (ต้องเปิดดูจริง — HTTP 200 ไม่ใช่หลักฐานว่าตรง):**
+เปิด `wireframe.html` + `localhost:3000` วางข้างกัน ต่อหน้า:
 
 *ตรงโครง (fidelity)*
 - [ ] component ครบตาม lock — ไม่ขาด ไม่เกิน
@@ -142,7 +212,7 @@ Port wireframe.html เป็น Next.js pages — 1:1
 - [ ] copy ตรงคำต่อคำ
 - [ ] สี/ฟอนต์/ระยะ = token
 - [ ] ทุกปุ่มไปหน้าถูกตาม data-action
-- [ ] state ครบ (ลองทำให้ empty/error โผล่)
+- [ ] state ครบ (ลองทำให้ empty/error โผล่ — ไม่ใช่แค่ happy path)
 
 *Quality floor (ปิดท้ายทุกหน้า)*
 - [ ] responsive ลง mobile = stack ไม่พัง (Ctrl+Shift+M)
@@ -156,13 +226,37 @@ Port wireframe.html เป็น Next.js pages — 1:1
 
 ---
 
-## เชื่อมกับ skill อื่น
-- ก่อน: `md-scaffold` (ได้ design.md + database.md ที่ annotation อ้างถึง)
-- หลัง: `build-frontend` (คุม behavior/logic ต่อ), `supabase-setup`, `ux-ui-review`
-- token/copy discipline ปรับจาก skill `frontend-design` ของ Anthropic
+## เชื่อมกับ skill อื่น (chain ต่อเนื่อง — Vibe Coding Day 1–3)
 
-## flow
 ```
-DESIGN wireframe.html (AI ร่าง+user ปรับ) → LOCK wireframe.lock.md (freeze)
-   → BUILD port 1:1 → VERIFY diff+checklist → ตรง → หน้าถัดไป
+[Day 1] md-scaffold ── design.md + database.md ──┐
+                                                 ▼
+        wireframe-lock  เฟส0 → 1(A/B) → 2 LOCK(ยืนยัน)
+                                                 │
+[Day 2]                          เฟส3 BUILD+VERIFY (port 1:1, โครง+copy+state)
+                                                 ▼
+        build-frontend ── ใส่ behavior/logic (validation, คำนวณ, submit ทำงานจริง)
+                                                 ▼
+        vercel-deploy (preview URL)
+                                                 ▼
+[Day 3] supabase-setup ── ต่อ DB จริง + login (ผูก data-field → table จริง)
+                                                 ▼
+        ux-ui-review → vercel-deploy prod
+```
+
+- **ก่อน:** `md-scaffold` (ได้ design.md + database.md ที่ annotation อ้างถึง).
+  เคส 🅱️ ที่ไม่มี database.md → ทำ md-scaffold ก่อน B1/B2.
+- **หลัง:** `build-frontend` (คุม behavior/logic ต่อ), `supabase-setup` (ต่อ DB จริง), `ux-ui-review`.
+- `handoff` ระหว่างทางถ้า context จะเต็ม — ส่งต่อไม่ต้องเล่าซ้ำ.
+- token/copy discipline ปรับจาก skill `frontend-design` ของ Anthropic.
+
+## flow สรุป
+```
+เฟส0 เลือกเคส
+  🅰️ ใหม่:  DESIGN wireframe.html (AI ร่าง+user ปรับ)
+  🅱️ มีแล้ว: B1 annotate ในที่  /  B2 redraw + fidelity diff จนตรงของเดิม
+        ↓ (บรรจบ)
+เฟส2 LOCK wireframe.lock.md → ⛔ user ยืนยัน
+        ↓
+เฟส3 BUILD port 1:1 → VERIFY diff+checklist(ดูตาจริง) → ตรง → หน้าถัดไป
 ```
