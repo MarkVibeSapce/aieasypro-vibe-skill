@@ -46,7 +46,8 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 ### 🚀 Build คอร์ส (Day 1–3)
 | Skill | ใช้ตอน |
 |-------|--------|
-| `md-scaffold` | Day 1 — เล่าโปรเจคปากเปล่า → สร้างไฟล์ MD spec ครบชุด |
+| `design-thinking` | Day 0–1 — คิดก่อนทำ: เข้าใจลูกค้าจริงผ่านโพสต์อิท → prototype → เทสต์ ก่อน build |
+| `md-scaffold` | Day 1 — เล่าโปรเจคปากเปล่า → สร้างไฟล์ MD spec ครบชุด (อ่าน discovery.md ต่อได้เลย) |
 | `wireframe-lock` | Day 1–2 — ทำ wireframe.html เป็น "สัญญา" → build ตรง 100% ไม่ drift |
 | `build-frontend` | Day 2 — build Next.js UI ทีละหน้า ตาม MD |
 | `supabase-setup` | Day 3 — เชื่อม database + login (AI ออกแบบ schema) |
@@ -56,7 +57,8 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 ## 🎯 วิธีใช้ในคอร์ส
 
-1. **Day 1** — เล่าโปรเจค → `/md-scaffold` สร้าง `docs/*.md` → `/wireframe-lock` ออกแบบ wireframe
+0. **Day 0–1** — `/design-thinking` เข้าใจลูกค้าจริง (โพสต์อิท) → prototype → เทสต์ → ได้ `docs/discovery.md`
+1. **Day 1** — `/md-scaffold` (อ่าน discovery.md ต่อ) สร้าง `docs/*.md` → `/wireframe-lock` ออกแบบ wireframe
 2. **Day 2** — `/wireframe-lock` lock+build ตรง wireframe → `/build-frontend` → `/vercel-deploy` (preview)
 3. **Day 3** — `/supabase-setup` → `/ux-ui-review` → `/vercel-deploy prod`
 
